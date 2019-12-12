@@ -1,7 +1,7 @@
-import 'reflect-metadata';
-import express from 'express';
-import { ApolloServer } from 'apollo-server-express';
-import { generateSchema } from './schema';
+import "reflect-metadata";
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import { generateSchema } from "./schema";
 
 const startServer = async () => {
   const app = express();
