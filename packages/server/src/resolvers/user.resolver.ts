@@ -1,4 +1,4 @@
-import { Resolver, Ctx, Query, Arg } from "type-graphql";
+import { Resolver, Ctx, Query, Arg, ObjectType, Field } from "type-graphql";
 import { User } from "../entity/user.entity";
 import { Context } from "../types/graphql";
 import { UserService } from "../service/user.service";
@@ -12,21 +12,34 @@ export class UserResolver {
     return url;
   }
 
-  @Query(() => User)
+  @Query(() => AuthenticationResponse, { nullable: true })
   async authenticate(
     @Arg("code") code: string,
     @Arg("state") state: string,
     @Ctx() ctx: Context
-  ): Promise<User | null> {
+  ): Promise<AuthenticationResponse | null> {
     const userService = new UserService();
 
-    const user = await userService.getSpotifyCredentials(
+    const data = await userService.getSpotifyCredentials(
       code,
       state,
       ctx.req,
       ctx.res
     );
 
-    return user;
+    return data ? new AuthenticationResponse(data) : null;
   }
+}
+
+@ObjectType()
+class AuthenticationResponse {
+  constructor(init: AuthenticationResponse) {
+    Object.assign(this, init);
+  }
+
+  @Field()
+  user: User;
+
+  @Field()
+  token: string;
 }

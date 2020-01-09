@@ -7,11 +7,17 @@ import { SpotifyUser } from "@app/types/spotify";
 
 import fetch from "node-fetch";
 import { User } from "../entity/user.entity";
+import * as jwt from "jsonwebtoken";
 
 const SPOTIFY_STATE_KEY = "SPOTIFY_STATE_KEY";
 
 const baseUrl = isProduction() ? process.env.APP_URL : "http://localhost:4000";
 const redirectUri = `${baseUrl}/auth/callback`;
+
+export interface AuthenticationResponse {
+  user: User;
+  token: string;
+}
 
 export class UserService {
   getAuthenticationUrl(res: Response) {
@@ -38,7 +44,7 @@ export class UserService {
     state: string,
     req: Request,
     res: Response
-  ) {
+  ): Promise<AuthenticationResponse | null> {
     const storedState = req.cookies.SPOTIFY_STATE_KEY || null;
 
     if (!code || !state || state !== storedState) {
@@ -76,18 +82,31 @@ export class UserService {
 
     const userData: SpotifyUser = await userResponse.json();
 
+    if (!userData) {
+      return null;
+    }
+
     const user = await this.createUser(userData, refresh_token);
+    const token = await this.createToken(user);
 
-    // Store in session/redis alternatively store in database and access by custom session token
-    const spotifyAuthentication = {
-      userId: user.id,
-      accessToken: access_token,
-      refreshToken: refresh_token
-    };
+    return { user, token };
+  }
 
-    console.log(spotifyAuthentication);
-
-    return user;
+  private createToken(user: User): Promise<string> {
+    const ONE_WEEK = 60 * 60 * 24 * 7;
+    return new Promise((resolve, reject) => {
+      jwt.sign(
+        user,
+        process.env.TOKEN_SECRET as string,
+        { expiresIn: ONE_WEEK },
+        (err, token) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(token);
+        }
+      );
+    });
   }
 
   private async createUser(
