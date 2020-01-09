@@ -2,6 +2,6 @@ import { Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Player {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: number;
 }
