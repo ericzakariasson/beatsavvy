@@ -20,7 +20,10 @@ export class CacheService {
     return this.client.get(key);
   }
 
-  public set<T>(key: string, data: T, lifetime: number) {
-    this.client.set(key, JSON.stringify(data), "EX", lifetime);
+  public set(key: string, value: string, lifetime: number) {
+    return this.client.set(key, value, "EX", lifetime, undefined);
   }
 }
+
+export const spotifyAccessTokenKey = (userId: string) =>
+  `spotify:access_token:${userId}`;

@@ -7,7 +7,7 @@ import { ObjectType, Field } from "type-graphql";
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   @Field()
-  id: number;
+  id: string;
 
   @Column()
   spotifyId: string;

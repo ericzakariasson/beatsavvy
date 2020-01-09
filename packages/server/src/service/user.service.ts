@@ -1,13 +1,13 @@
-import * as uuid from "uuid/v4";
-import * as qs from "qs";
-import { isProduction } from "../utils";
-import { Request, Response } from "express";
-import { URLSearchParams } from "url";
 import { SpotifyUser } from "@app/types/spotify";
-
-import fetch from "node-fetch";
-import { User } from "../entity/user.entity";
+import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
+import fetch from "node-fetch";
+import * as qs from "qs";
+import { URLSearchParams } from "url";
+import * as uuid from "uuid/v4";
+import { User } from "../entity/user.entity";
+import { isProduction, time } from "../utils";
+import { CacheService, spotifyAccessTokenKey } from "./cache.service";
 
 const SPOTIFY_STATE_KEY = "SPOTIFY_STATE_KEY";
 
@@ -82,6 +82,8 @@ export class UserService {
 
     const userData: SpotifyUser = await userResponse.json();
 
+    console.log(userData);
+
     if (!userData) {
       return null;
     }
@@ -89,16 +91,27 @@ export class UserService {
     const user = await this.createUser(userData, refresh_token);
     const token = await this.createToken(user);
 
+    const cacheService = new CacheService();
+
+    const setToken = await cacheService.set(
+      spotifyAccessTokenKey(user.id),
+      access_token,
+      time.hours(1)
+    );
+
+    if (!setToken) {
+      throw new Error(`Could not set access token for user ${user.id}`);
+    }
+
     return { user, token };
   }
 
   private createToken(user: User): Promise<string> {
-    const ONE_WEEK = 60 * 60 * 24 * 7;
     return new Promise((resolve, reject) => {
       jwt.sign(
         user,
         process.env.TOKEN_SECRET as string,
-        { expiresIn: ONE_WEEK },
+        { expiresIn: time.days(7) },
         (err, token) => {
           if (err) {
             reject(err);
