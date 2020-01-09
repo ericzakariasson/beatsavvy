@@ -7,8 +7,6 @@ import { generateSchema } from "./schema";
 import { createConnection } from "typeorm";
 import { connectionOptions } from "./ormconfig";
 
-import * as user from "./controllers/user";
-
 dotenv.config();
 
 const startServer = async () => {
@@ -22,12 +20,10 @@ const startServer = async () => {
 
   app.use(cookieParser());
 
-  app.use("/auth/login", user.login);
-  app.use("/auth/callback", user.loginCallback);
-
   const schema = await generateSchema();
   const server = new ApolloServer({
-    schema
+    schema,
+    context: ({ req, res }) => ({ req, res })
   });
 
   server.applyMiddleware({ app });

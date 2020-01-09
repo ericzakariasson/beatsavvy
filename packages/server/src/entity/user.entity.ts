@@ -1,16 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import { IsEmail } from "class-validator";
+import { ObjectType, Field } from "type-graphql";
 
 @Entity()
-export class User {
+@ObjectType()
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
+  @Field()
   id: number;
 
   @Column()
   spotifyId: string;
 
   @Column()
+  @IsEmail()
+  @Field()
+  email: string;
+
+  @Field()
+  @Column()
   username: string;
 
+  @Field()
   @Column()
   displayName: string;
+
+  @Column()
+  refreshToken: string;
 }
