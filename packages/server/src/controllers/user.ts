@@ -81,5 +81,7 @@ export const loginCallback = async (req: Request, res: Response) => {
     refreshToken: refresh_token
   };
 
+  console.log(spotifyAuthentication);
+
   return res.status(200).send("You have a code 🥳");
 };
