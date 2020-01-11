@@ -24,13 +24,13 @@ const Title = styled.h1<StyledTitle>`
 const Header = () => (
   <>
     <Head>
-      <title>Title</title>
+      <title>Beatsavvy</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </Head>
     <FlexWrap>
-      <Title color="crimson">Beatelligence</Title>
-      <Title color="darkslategrey">Musiclash</Title>
-      <Title color="darkorange">Musiquery</Title>
+      <Title color="crimson">Beatsavvy</Title>
+      <Title color="darkslategrey">Beatsavvy</Title>
+      <Title color="darkorange">Beatsavvy</Title>
     </FlexWrap>
   </>
 );

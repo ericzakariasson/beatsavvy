@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "noImplicitAny": false,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -14,5 +15,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve"
+    // "baseUrl": "./",
+    // "paths": {
+    //   "~/views/*": ["./views/*"],
+    //   "~/viewsComp/*": ["./views/components/*"]
+    // }
   }
 }
