@@ -1,2 +1,9 @@
-const withGraphql = require('next-plugin-graphql')
-module.exports = withGraphql()
+const { parsed: localEnv } = require('dotenv').config()
+const webpack = require('webpack')
+
+module.exports = {
+    webpack(config) {
+        config.plugins.push(new webpack.EnvironmentPlugin(localEnv))
+        return config
+    }
+}

@@ -6,12 +6,9 @@ import { withApollo } from '../../graphql/withApollo';
 
 import Layout from '../../views/components/Layout';
 
-interface IAppInitialProps extends AppInitialProps {
-  auth?: boolean;
-}
+interface IAppInitialProps extends AppInitialProps {}
 
-function CustomApp({ Component, pageProps }: any) {
-  console.log(pageProps);
+function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={{ theme }}>
       <GlobalStyle />
@@ -26,12 +23,11 @@ CustomApp.getInitialProps = async ({
   Component,
   ctx
 }: AppContext): Promise<IAppInitialProps> => {
-  //
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
     : {};
-  console.log(ctx);
-  return { pageProps, auth: true };
+
+  return { pageProps };
 };
 
 export default withApollo(CustomApp);

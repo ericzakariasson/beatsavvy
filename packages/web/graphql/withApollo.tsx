@@ -4,13 +4,22 @@ import App, { AppContext } from 'next/app';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { getDataFromTree } from '@apollo/react-ssr';
 import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import fetch from 'node-fetch';
+import { ApolloProps, Token } from '../types/graphql';
 
-type ApolloProps = ApolloClient<NormalizedCacheObject>;
+// import cookie from 'js-cookie';
 
 let globalApolloClient: ApolloProps;
+
+// const getToken = () => {
+//   let token: Token = null;
+//   if (process.browser) {
+//     token = `Bearer ${cookie.get(`${process.env.TOKEN as string}`)}`;
+//   }
+//   return token;
+// };
 
 export function withApollo(Component, { ssr = true } = {}) {
   const WithApollo = ({ apolloClient, apolloState, ...pageProps }) => {
@@ -27,9 +36,8 @@ export function withApollo(Component, { ssr = true } = {}) {
     WithApollo.getInitialProps = async ctx => {
       const { AppTree } = ctx;
 
-      const apolloClient: ApolloProps = (ctx.apolloClient = initApolloClient(
-        {}
-      ));
+      // @ts-ignore
+      const apolloClient: ApolloProps = (ctx.apolloClient = initApolloClient());
 
       let pageProps = {};
       if (Component.getInitialProps) {
@@ -87,7 +95,10 @@ function createApolloClient(initialState = {}) {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: new HttpLink({
-      uri: 'https://api.graph.cool/simple/v1/cixmkt2ul01q00122mksg82pn',
+      // headers: {
+      //   authorization: getToken() || null
+      // },
+      uri: 'http://localhost:8000/graphql',
       credentials: 'same-origin',
       // Cast as 'any' workaround ...
       fetch: fetch as any

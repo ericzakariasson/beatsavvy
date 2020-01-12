@@ -5,7 +5,6 @@ import styled from 'styled-components';
 
 const StyledLayout = styled.div`
   height: 100vh;
-  background: #f7f7f7;
   padding: 1rem 2rem;
 `;
 
