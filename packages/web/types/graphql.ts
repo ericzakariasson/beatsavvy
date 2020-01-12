@@ -1,7 +1,7 @@
 import { ApolloClient } from 'apollo-client';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 
-export type ApolloProps = ApolloClient<NormalizedCacheObject>;
+export type ApolloProps = ApolloClient<NormalizedCacheObject> | null;
 export type Token = null | string;
 
 // Can we get a global namespace? 

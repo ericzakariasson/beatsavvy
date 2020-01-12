@@ -1,108 +1,108 @@
 import React from 'react';
 import Head from 'next/head';
-import App, { AppContext } from 'next/app';
-import { ApolloProvider } from '@apollo/react-hooks';
+import {
+  AppContextType,
+  NextComponentType,
+  AppInitialProps
+} from 'next/dist/next-server/lib/utils';
+import { ApolloProps } from '../types/graphql';
 import { getDataFromTree } from '@apollo/react-ssr';
 import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider } from '@apollo/react-hooks';
 import fetch from 'node-fetch';
-import { ApolloProps, Token } from '../types/graphql';
 
-// import cookie from 'js-cookie';
+const GRAPHQL_URI = process.env.GRAPHQL_URI || 'http://localhost:4000/grahpql';
 
-let globalApolloClient: ApolloProps;
+type InitApolloArgs = [{}];
 
-// const getToken = () => {
-//   let token: Token = null;
-//   if (process.browser) {
-//     token = `Bearer ${cookie.get(`${process.env.TOKEN as string}`)}`;
-//   }
-//   return token;
-// };
-
-export function withApollo(Component, { ssr = true } = {}) {
-  const WithApollo = ({ apolloClient, apolloState, ...pageProps }) => {
+export const withApollo = (
+  App: NextComponentType<AppContextType, AppInitialProps, any>,
+  { ssr = true } = {}
+) => {
+  const WithApollo = ({ apolloClient, apolloState, ...appProps }: any) => {
     const client = apolloClient || initApolloClient(apolloState);
 
     return (
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <App {...appProps} />
       </ApolloProvider>
     );
   };
 
-  if (ssr || Component.getInitialProps) {
-    WithApollo.getInitialProps = async ctx => {
-      const { AppTree } = ctx;
-
-      // @ts-ignore
-      const apolloClient: ApolloProps = (ctx.apolloClient = initApolloClient());
-
-      let pageProps = {};
-      if (Component.getInitialProps) {
-        pageProps = await Component.getInitialProps(ctx);
-      }
-
-      if (typeof window === 'undefined') {
-        if (ctx.res?.finished) {
-          return pageProps;
-        }
-
-        if (ssr) {
-          try {
-            await getDataFromTree(
-              <AppTree
-                pageProps={{
-                  ...pageProps,
-                  apolloClient
-                }}
-              />
-            );
-          } catch (error) {
-            throw new Error(error);
-          }
-
-          Head.rewind();
-        }
-      }
-
-      const apolloState = apolloClient.cache.extract();
-
-      return {
-        ...pageProps,
-        apolloState
-      };
-    };
+  if (process.env.NODE_ENV !== 'production') {
+    WithApollo.displayName = `withApollo(${App.displayName})`;
   }
+
+  WithApollo.getInitialProps = async (ctx: AppContextType) => {
+    const {
+      Component,
+      router,
+      ctx: { res }
+    } = ctx;
+
+    // @ts-ignore
+    const apolloClient = (ctx.ctx.apolloClient = initApolloClient());
+
+    const appProps = App.getInitialProps ? await App.getInitialProps(ctx) : {};
+
+    if (res && res.finished) {
+      return {};
+    }
+
+    if (ssr) {
+      try {
+        // Run all GraphQL queries
+        await getDataFromTree(
+          <ApolloProvider client={apolloClient}>
+            <App {...appProps} Component={Component} router={router} />
+          </ApolloProvider>
+        );
+      } catch (error) {
+        console.log('Error while running `getDataFromTree`', error);
+      }
+
+      Head.rewind();
+    }
+
+    const apolloState = apolloClient.cache.extract();
+
+    return {
+      ...appProps,
+      apolloState
+    };
+  };
 
   return WithApollo;
-}
+};
 
-function initApolloClient(initialState) {
+let apolloClient: ApolloProps = null;
+
+const initApolloClient = (...args: InitApolloArgs) => {
+  // Make sure to create a new client for every server-side request
   if (typeof window === 'undefined') {
-    return createApolloClient(initialState);
+    return createApolloClient(...args);
   }
 
-  if (!globalApolloClient) {
-    globalApolloClient = createApolloClient(initialState);
+  // Reuse client on the client-side
+  if (!apolloClient) {
+    apolloClient = createApolloClient(...args);
   }
 
-  return globalApolloClient;
-}
+  return apolloClient;
+};
 
-function createApolloClient(initialState = {}) {
+/* Create ApolloClient */
+const createApolloClient = (initialState = {}) => {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: new HttpLink({
-      // headers: {
-      //   authorization: getToken() || null
-      // },
-      uri: 'http://localhost:8000/graphql',
+      uri: GRAPHQL_URI as string,
       credentials: 'same-origin',
       // Cast as 'any' workaround ...
       fetch: fetch as any
     }),
     cache: new InMemoryCache().restore(initialState)
   });
-}
+};

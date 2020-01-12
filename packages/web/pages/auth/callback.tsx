@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import { useCallbackQuery } from '../../hooks/useCallbackQuery';
 import { useRouter } from 'next/router';
 
-const REDIRECT_URI = (process.env.REDIRECT_URI as string) || '/';
+import { NextPageContext } from 'next';
+
+const REDIRECT_URI = process.env.REDIRECT_URI || '/';
 
 const Callback = ({ code = '', state = '' }) => {
   const [{ error, loading }] = useCallbackQuery({ code, state });
@@ -13,14 +15,14 @@ const Callback = ({ code = '', state = '' }) => {
   useEffect(() => {
     if (!loading && !error) {
       // Also populate state with user
-      router.push(REDIRECT_URI);
+      router.push(REDIRECT_URI as string);
     }
-  });
+  }, []);
 
   return null;
 };
 
-Callback.getInitialProps = async ctx => {
+Callback.getInitialProps = async (ctx: NextPageContext) => {
   const { code, state } = ctx.query;
   return { code, state };
 };
