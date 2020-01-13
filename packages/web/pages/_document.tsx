@@ -3,7 +3,8 @@ import { ServerStyleSheet } from 'styled-components';
 
 // https://www.styled-components.com/docs/advanced#server-side-rendering
 class MyDocument extends Document {
-  static async getInitialProps(ctx: DocumentContext) {
+  // @ts-ignore
+  static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
 
@@ -15,7 +16,6 @@ class MyDocument extends Document {
 
       const initialProps = await Document.getInitialProps(ctx);
 
-      //  console.log(initialProps)
       return {
         ...initialProps,
         styles: (
