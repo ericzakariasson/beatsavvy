@@ -35,8 +35,6 @@ export class UserResolver {
       ctx.res
     );
 
-    console.log(data);
-
     return data ? new AuthenticationResponse(data) : null;
   }
 }
