@@ -3,7 +3,7 @@ import Head from 'next/head';
 import {
   AppContextType,
   NextComponentType,
-  AppInitialProps
+  AppInitialProps,
 } from 'next/dist/next-server/lib/utils';
 import { ApolloProps } from '../types/graphql';
 import { getDataFromTree } from '@apollo/react-ssr';
@@ -39,7 +39,7 @@ export const withApollo = (
     const {
       Component,
       router,
-      ctx: { res }
+      ctx: { res },
     } = ctx;
 
     // @ts-ignore
@@ -70,7 +70,7 @@ export const withApollo = (
 
     return {
       ...appProps,
-      apolloState
+      apolloState,
     };
   };
 
@@ -101,8 +101,8 @@ const createApolloClient = (initialState = {}) => {
       uri: GRAPHQL_URI as string,
       credentials: 'same-origin',
       // Cast as 'any' workaround ...
-      fetch: fetch as any
+      fetch: fetch as any,
     }),
-    cache: new InMemoryCache().restore(initialState)
+    cache: new InMemoryCache().restore(initialState),
   });
 };

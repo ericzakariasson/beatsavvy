@@ -82,10 +82,8 @@ export class UserService {
 
     const userData: SpotifyUser = await userResponse.json();
 
-    console.log(userData);
-
     if (!userData) {
-      return null;
+      throw new Error("No user data found");
     }
 
     const user = await this.createUser(userData, refresh_token);
