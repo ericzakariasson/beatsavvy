@@ -10,7 +10,7 @@ export class CacheService {
     redis.on("connect", () => console.log("Connetion to redis established"));
 
     redis.on("error", () =>
-      console.log("Connetion to redis could not be established")
+      console.log("Connection to redis could not be established")
     );
 
     this.client = redis;
@@ -21,7 +21,7 @@ export class CacheService {
   }
 
   public set(key: string, value: string, lifetime: number) {
-    return this.client.set(key, value, "EX", lifetime, undefined);
+    return this.client.set(key, value, "EX", lifetime);
   }
 }
 

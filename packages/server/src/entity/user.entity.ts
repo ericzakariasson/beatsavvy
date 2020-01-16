@@ -23,7 +23,7 @@ export class User extends BaseEntity {
 
   @Field()
   @Column()
-  displayName: string;
+  spotifyDisplayName: string;
 
   @Column()
   refreshToken: string;

@@ -13,7 +13,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from '@apollo/react-hooks';
 import fetch from 'node-fetch';
 
-const GRAPHQL_URI = process.env.GRAPHQL_URI || 'http://localhost:4000/grahpql';
+const GRAPHQL_URI = process.env.GRAPHQL_URI || 'http://localhost:4000/graphql';
 
 type InitApolloArgs = [{}];
 

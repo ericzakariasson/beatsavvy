@@ -4,5 +4,12 @@ declare module "@app/types/spotify" {
     display_name: string;
     email: string;
     id: string;
+    images: SpotifyUserImage[];
+  }
+
+  interface SpotifyUserImage {
+    url: string | null;
+    height: number | null;
+    width: number | null;
   }
 }
