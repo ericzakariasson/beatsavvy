@@ -1,4 +1,12 @@
-import { Resolver, Ctx, Query, Arg, ObjectType, Field } from "type-graphql";
+import {
+  Resolver,
+  Ctx,
+  Query,
+  Arg,
+  ObjectType,
+  Field,
+  Mutation
+} from "type-graphql";
 import { User } from "../entity/user.entity";
 import { Context } from "../types/graphql";
 import { UserService } from "../service/user.service";
@@ -12,7 +20,7 @@ export class UserResolver {
     return url;
   }
 
-  @Query(() => AuthenticationResponse, { nullable: true })
+  @Mutation(() => AuthenticationResponse, { nullable: true })
   async authenticate(
     @Arg("code") code: string,
     @Arg("state") state: string,
