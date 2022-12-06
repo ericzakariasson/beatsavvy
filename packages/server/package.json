@@ -33,7 +33,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.0",
     "pg": "^7.17.0",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^0.17.5",
     "typeorm": "^0.2.22",
